@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор чистки аквариума</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .animal-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .animal-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        select {
+            flex: 2;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+        }
+        
+        input[type="number"].animal-count {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .add-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .add-button:hover {
+            background: #5568d3;
+        }
+        
+        .remove-button {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .calculate-button {
+            width: 100%;
+            background: #10ac84;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+        
+        .calculate-button:hover {
+            background: #0e9670;
+        }
+        
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #e8f5e9;
+            border-left: 5px solid #10ac84;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result h2 {
+            color: #10ac84;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .result-item {
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .result-item strong {
+            color: #10ac84;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+        
+        .warning h2 {
+            color: #856404;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #999;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐠 Калькулятор чистки аквариума</h1>
+        <p class="subtitle">Узнайте, когда нужно чистить ваш аквариум</p>
+        
+        <div class="input-group">
+            <label for="volume">Объём аквариума (литры):</label>
+            <input type="number" id="volume" min="1" placeholder="Например: 20" required>
+        </div>
+        
+        <div class="input-group">
+            <label>Животные в аквариуме:</label>
+            <div class="animal-section" id="animals-container">
+                <div class="animal-row">
+                    <select class="animal-select">
+                        <option value="">Выберите животное</option>
+                        <option value="scalaria">Скалярия</option>
+                        <option value="triton">Тритон</option>
+                        <option value="crayfish">Рак</option>
+                        <option value="frog">Лягушка (шпорцевая)</option>
+                    </select>
+                    <input type="number" class="animal-count" min="1" value="1" placeholder="Кол-во">
+                </div>
+            </div>
+            <button class="add-button" onclick="addAnimalRow()">+ Добавить животное</button>
+        </div>
+        
+        <button class="calculate-button" onclick="calculate()">Рассчитать</button>
+        
+        <div id="result" class="result"></div>
+        
+        <div class="footer">
+            Проект учениц 7 ЕН класса МАОУ «Гимназия «Краснообская» <br> Кузнецовой Анны и Галактионовой Екатерины
+
+        </div>
+    </div>
+
+    <script>
+        // Коэффициенты загрязнения (упрощённая модель)
+        const animalData = {
+            scalaria: { name: 'Скалярия', coefficient: 1.0, cleanDays: 10 },
+            triton: { name: 'Тритон', coefficient: 2.5, cleanDays: 5 },
+            crayfish: { name: 'Рак', coefficient: 2.0, cleanDays: 6 },
+            frog: { name: 'Лягушка', coefficient: 1.5, cleanDays: 7 }
+        };
+
+        function addAnimalRow() {
+            const container = document.getElementById('animals-container');
+            const row = document.createElement('div');
+            row.className = 'animal-row';
+            row.innerHTML = `
+                <select class="animal-select">
+                    <option value="">Выберите животное</option>
+                    <option value="scalaria">Скалярия</option>
+                    <option value="triton">Тритон</option>
+                    <option value="crayfish">Рак</option>
+                    <option value="frog">Лягушка (шпорцевая)</option>
+                </select>
+                <input type="number" class="animal-count" min="1" value="1" placeholder="Кол-во">
+                <button class="remove-button" onclick="removeAnimalRow(this)">✕</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeAnimalRow(button) {
+            button.parentElement.remove();
+        }
+
+        function calculate() {
+            const volume = parseFloat(document.getElementById('volume').value);
+            const resultDiv = document.getElementById('result');
+            
+            // Проверка объёма
+            if (!volume || volume <= 0) {
+                resultDiv.className = 'result warning show';
+                resultDiv.innerHTML = '<h2>⚠️ Ошибка</h2><p>Пожалуйста, укажите корректный объём аквариума</p>';
+                return;
+            }
+            
+            // Собираем данные о животных
+            const animalRows = document.querySelectorAll('.animal-row');
+            const animals = [];
+            let totalCoefficient = 0;
+            
+            animalRows.forEach(row => {
+                const select = row.querySelector('.animal-select');
+                const countInput = row.querySelector('.animal-count');
+                const animalType = select.value;
+                const count = parseInt(countInput.value) || 0;
+                
+                if (animalType && count > 0) {
+                    const data = animalData[animalType];
+                    animals.push({
+                        name: data.name,
+                        count: count,
+                        coefficient: data.coefficient
+                    });
+                    totalCoefficient += data.coefficient * count;
+                }
+            });
+            
+            // Проверка наличия животных
+            if (animals.length === 0) {
+                resultDiv.className = 'result warning show';
+                resultDiv.innerHTML = '<h2>⚠️ Внимание</h2><p>Добавьте хотя бы одно животное для расчёта</p>';
+                return;
+            }
+            
+            // РАСЧЁТ
+            // Базовая формула: дни = базовый_период × (объём / 20) / коэффициент_загрязнения
+            // Чем больше объём → тем дольше до чистки
+            // Чем больше животных → тем быстрее чистка
+            
+            const baseVolume = 20; // базовый объём для расчёта
+            const basePeriod = 7; // базовый период в днях
+            
+            const volumeFactor = volume / baseVolume;
+            const daysUntilCleaning = Math.round((basePeriod * volumeFactor) / totalCoefficient);
+            
+            // Ограничиваем диапазон 2-30 дней (чтобы не было абсурдных значений)
+            const finalDays = Math.max(2, Math.min(30, daysUntilCleaning));
+            
+            // Формируем результат
+            let animalsList = '<ul style="margin: 10px 0; padding-left: 20px;">';
+            animals.forEach(animal => {
+                animalsList += `<li>${animal.name}: ${animal.count} шт.</li>`;
+            });
+            animalsList += '</ul>';
+            
+            resultDiv.className = 'result show';
+            resultDiv.innerHTML = `
+                <h2>✅ Результат расчёта</h2>
+                <div class="result-item">
+                    <strong>Объём аквариума:</strong> ${volume} литров
+                </div>
+                <div class="result-item">
+                    <strong>Животные:</strong>
+                    ${animalsList}
+                </div>
+                <div class="result-item" style="font-size: 20px; margin-top: 15px; padding: 15px; background: white; border-radius: 8px; text-align: center;">
+                    <strong>Рекомендуемая чистка через:</strong><br>
+                    <span style="font-size: 32px; color: #10ac84; font-weight: bold;">${finalDays}</span> дней
+                </div>
+                <div class="result-item" style="margin-top: 15px; font-size: 14px; color: #666;">
+                    💡 <em>Это примерный расчёт. Следите за состоянием воды и поведением животных!</em>
+                </div>
+            `;
+            
+            // Прокрутка к результату
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    </script>
+</body>
+</html>
